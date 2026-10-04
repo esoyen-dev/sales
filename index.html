@@ -159,7 +159,7 @@
                             </div>
                         </div>
                         <div class="card full">
-                            <div class="ph" data-img="images/sales/fullbody.jpg"><svg viewBox="0 0 60 120" style="max-width:110px"><circle cx="30"
+                            <div class="ph" data-img="images/sales/fullbody.jpg" style="aspect-ratio: 3/4.5;"><svg viewBox="0 0 60 120" style="max-width:110px;"><circle cx="30"
                                             cy="16" r="10" /><path
                                             d="M14 112V56c0-10 6-18 16-18s16 8 16 18v56M30 54v58M14 70l-6 26M46 70l6 26" /></svg></div>
                             <div class="in">
@@ -422,6 +422,33 @@
     <script>
         var CAR = '<svg viewBox="0 0 120 60"><path d="M8 40h104M14 40l8-16c2-4 5-6 9-6h38c5 0 8 2 11 6l12 10c4 1 6 3 6 6M30 20l-4 14M62 18v16"/><circle cx="34" cy="44" r="7"/><circle cx="88" cy="44" r="7"/></svg>';
         var cars = [{
+            k: "rush",
+            n: "Rush",
+            t: "MVP",
+            p: 290000000,
+            v: "wpqF1wJj2o0",
+            cl: [                      
+                ["Maroon", "#a22121"],          
+                ["Hitam", "#1f1f1f"],
+                ["Putih", "#f3f6fa"],
+                ["Browns", "#958974"],                
+                ["Grey", "#7e7f81"]
+            ],
+            ty: [
+                ["G AT", 301000000],
+                ["1.5 S MT GR Sport", 305000000],
+                ["1.5 S AT GR Sport", 316000000]                
+            ],
+            d: "Toyota Rush tersedia dalam pilihan mesin Bensin di Indonesia SUV baru dari Toyota hadir dalam 4 varian. Bicara soal spesifikasi mesin Toyota Rush, ini ditenagai dua pilihan mesin Bensin berkapasitas 1496 cc. Rush tersedia dengan transmisi Manual and Otomatis tergantung variannya. Rush adalah SUV 7 seater dengan panjang 4435 mm, lebar 1695 mm, wheelbase 2685 mm.",
+            f: ["Layar audio dan kamera mundur", "Irit bahan bakar", "Biaya perawatan terjangkau"],
+            s: [
+                ["Mesin", "1.5L 4-silinder"],
+                ["Transmisi", "MT / CVT"],
+                ["Tenaga", "103 PS"],
+                ["Kapasitas", "7 penumpang"],
+                ["Bahan Bakar", "Bensin"]
+            ]
+        },{
             k: "calya",
             n: "Calya",
             t: "Hatchback",
@@ -851,7 +878,7 @@
             e.onchange = calc
         });
         var hot = document.getElementById("hot");
-        [1, 2, 4, 5].forEach(function(i) {
+        [1, 2, 4, 0].forEach(function(i) {
             hot.appendChild(card(i, true))
         });
         // testimoni dan galeri otomatis
