@@ -1,12 +1,16 @@
 :root {
-    --red: #d6001c;
-    --red2: #ff2a3f;
-    --bg: #fff;
+    --red: #d90e1f;
+    --red2: #ef2b3b;
+    --bg: #f6f7f9;
     --card: #fff;
-    --line: #e8dfdf;
-    --tx: #1c1212;
-    --mut: #6a5d5d;
-    --soft: #faf3f3;
+    --line: #e6e8ee;
+    --tx: #15181d;
+    --mut: #667085;
+    --soft: #f2f3f7;
+    --r: 16px;
+    --rl: 24px;
+    --sh: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
+    --shl: 0 18px 44px rgba(16, 24, 40, .13);
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px)
@@ -26,28 +30,33 @@ body {
     margin: 0;
     background: var(--bg);
     color: var(--tx);
-    font: 16px/1.6 Barlow, system-ui, sans-serif
+    font: 16px/1.65 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased
 }
 
 h1,
 h2,
 h3 {
-    font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
-    line-height: 1.1;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-weight: 800;
+    line-height: 1.12;
     margin: 0 0 .5em;
-    letter-spacing: .01em
+    letter-spacing: -.03em
 }
 
 h1 {
-    font-size: clamp(2.4rem, 7vw, 4.2rem)
+    font-size: clamp(2.2rem, 6.4vw, 3.9rem);
+    line-height: 1.06
 }
 
 h2 {
-    font-size: 2rem
+    font-size: clamp(1.6rem, 3.2vw, 2.1rem)
 }
 
 h3 {
-    font-size: 1.35rem
+    font-size: 1.18rem;
+    font-weight: 700;
+    letter-spacing: -.02em
 }
 
 a {
@@ -80,7 +89,16 @@ nav .wrap {
 
 .logo {
     font: 700 1.5rem "Barlow Condensed", sans-serif;
-    text-decoration: none
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px
+}
+
+.logo .lgo {
+    width: 34px;
+    height: 34px;
+    flex: none
 }
 
 .logo b {
@@ -258,6 +276,8 @@ section.b {
     padding: 10px;
     color: var(--mut);
     font-size: .9rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
     background: repeating-linear-gradient(135deg, #f6eded 0 12px, #fbf6f6 12px 24px)
 }
 
@@ -398,6 +418,82 @@ select {
     font: inherit
 }
 
+/* pencarian mobil & tipe (combobox) */
+.card.cin {
+    overflow: visible
+}
+
+.combo {
+    position: relative
+}
+
+.combo input {
+    padding-right: 38px
+}
+
+.combo::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 19px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--mut);
+    border-bottom: 2px solid var(--mut);
+    transform: rotate(45deg);
+    pointer-events: none
+}
+
+.clist {
+    position: absolute;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin: 4px 0 0;
+    padding: 4px 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(80, 20, 20, .16);
+    max-height: 264px;
+    overflow: auto
+}
+
+.clist li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: .95rem
+}
+
+.clist li small {
+    color: var(--mut);
+    font-size: .85rem;
+    white-space: nowrap
+}
+
+.clist li:hover,
+.clist li.act {
+    background: #fff1f2;
+    color: var(--red)
+}
+
+.clist li[aria-selected="true"] {
+    font-weight: 600
+}
+
+.clist li.nores {
+    display: block;
+    color: var(--mut);
+    cursor: default;
+    text-align: center
+}
+
 .res {
     background: #fff1f2;
     border: 1px solid var(--red);
@@ -408,6 +504,26 @@ select {
 .big {
     font: 700 2.6rem "Barlow Condensed", sans-serif;
     color: var(--red)
+}
+
+/* tabel hasil simulasi angsuran (3 kolom) */
+.res table {
+    font-size: .95rem
+}
+
+.res table td:first-child {
+    white-space: nowrap;
+    padding-right: 10px
+}
+
+@media (max-width: 420px) {
+    .res table {
+        font-size: .85rem
+    }
+
+    .res {
+        padding: 14px
+    }
 }
 
 .seg {
@@ -653,7 +769,7 @@ details p {
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: inherit
+    object-fit: cover
 }
 
 .strip {
@@ -709,6 +825,8 @@ details p {
     color: #fff;
     padding: 26px 14px 10px;
     font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
     background: linear-gradient(transparent, rgba(0, 0, 0, .72))
 }
 
@@ -716,6 +834,129 @@ details p {
     flex: 0 0 min(84vw, 480px);
     aspect-ratio: 3/2;
     border-radius: 8px
+}
+
+.gi {
+    cursor: zoom-in
+}
+
+.pager {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 22px
+}
+
+.pager .pg {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--tx);
+    border-radius: 6px;
+    font: inherit;
+    cursor: pointer
+}
+
+.pager .pg:hover {
+    border-color: var(--red);
+    color: var(--red)
+}
+
+.pager .pg.on {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff
+}
+
+.pager .pg:disabled {
+    opacity: .4;
+    cursor: default
+}
+
+.pager .pgap {
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    color: var(--mut)
+}
+
+/* lightbox preview galeri */
+#lb .mbox {
+    background: none;
+    border: 0;
+    max-width: 94vw;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+#lb .mbox img {
+    max-width: 94vw;
+    max-height: 82vh;
+    display: block;
+    border-radius: 6px;
+    background: #111;
+    object-fit: contain
+}
+
+#lb .x {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 25
+}
+
+#lb .nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 25;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 0
+}
+
+#lb .nav:hover {
+    background: rgba(255, 255, 255, .34)
+}
+
+#lb .nav.prev {
+    left: 14px
+}
+
+#lb .nav.next {
+    right: 14px
+}
+
+#lb .nav.next svg {
+    transform: rotate(180deg)
+}
+
+#lb .lbc {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 25;
+    text-align: center;
+    color: #fff;
+    font-size: .92rem;
+    pointer-events: none
+}
+
+#lb .lbc:empty {
+    display: none
 }
 
 .vid video {
@@ -728,8 +969,10 @@ details p {
 
 .opt {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 4px 12px;
     width: 100%;
     background: #fff;
     border: 1px solid var(--line);
@@ -738,7 +981,14 @@ details p {
     margin-bottom: 8px;
     font: inherit;
     color: var(--tx);
-    cursor: pointer
+    cursor: pointer;
+    text-align:left;
+}
+
+.opt span {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere
 }
 
 .opt.on {
@@ -747,6 +997,10 @@ details p {
 }
 
 .opt b {
+    flex: none;
+    margin-left: auto;
+    white-space: nowrap;
+    text-align: right;
     color: var(--red)
 }
 
@@ -778,7 +1032,46 @@ details p {
     flex-wrap: wrap
 }
 
+.imgw {
+    position: relative
+}
+
+.imgw .nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .45);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 0
+}
+
+.imgw .nav:hover {
+    background: rgba(0, 0, 0, .7)
+}
+
+.imgw .nav.prev {
+    left: 10px
+}
+
+.imgw .nav.next {
+    right: 10px
+}
+
+.imgw .nav.next svg {
+    transform: rotate(180deg)
+}
+
 .tb {
+    display: flex;
+    flex-direction: column;
     background: #fff;
     border: 2px solid var(--line);
     border-radius: 8px;
@@ -787,6 +1080,15 @@ details p {
     width: 88px;
     font: inherit;
     color: var(--tx)
+}
+
+.tb small {
+    display: block;
+    margin-top: 4px;
+    padding: 0 2px;
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere
 }
 
 .tb.on {
@@ -840,4 +1142,1035 @@ details p {
 
 .info p {
     margin: 0 0 10px
+}
+
+.dsc {
+    text-align: justify
+}
+
+/* ===================================================================
+   MODERN THEME 2026 — tampilan web publik
+   Diletakkan sebelum blok MODE LIVE agar aturan live tetap menang.
+   =================================================================== */
+
+::selection {
+    background: rgba(217, 14, 31, .16)
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 84px
+}
+
+body {
+    background: radial-gradient(1100px 520px at 50% -180px, #fff 0%, rgba(255, 255, 255, 0) 70%), var(--bg)
+}
+
+/* ---------- navigasi ---------- */
+nav {
+    background: rgba(255, 255, 255, .86);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 6px 24px rgba(16, 24, 40, .05)
+}
+
+nav .wrap {
+    min-height: 66px
+}
+
+.logo {
+    font-size: 1.35rem;
+    letter-spacing: -.01em
+}
+
+nav ul {
+    flex-wrap: nowrap
+}
+
+nav a.l {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--mut);
+    transition: background .18s ease, color .18s ease
+}
+
+nav a.l:hover {
+    background: var(--soft);
+    color: var(--tx)
+}
+
+nav a.l.on {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(217, 14, 31, .25)
+}
+
+/* ---------- tombol ---------- */
+.btn {
+    border-radius: 999px;
+    padding: 13px 26px;
+    font: 700 .97rem "Plus Jakarta Sans", sans-serif;
+    box-shadow: 0 10px 24px rgba(217, 14, 31, .24);
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease
+}
+
+.btn:hover {
+    background: var(--red2);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(217, 14, 31, .3)
+}
+
+.btn.o {
+    background: #fff;
+    border: 1.5px solid rgba(217, 14, 31, .35);
+    box-shadow: none
+}
+
+.btn.o:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff
+}
+
+/* ---------- hero / slider ---------- */
+.slider {
+    border: 0;
+    border-radius: var(--rl);
+    box-shadow: var(--shl)
+}
+
+.slide {
+    min-height: 420px;
+    padding: 56px;
+    background: radial-gradient(900px 420px at 88% 10%, rgba(255, 255, 255, .18), transparent 62%),
+        linear-gradient(120deg, #a40614 0%, #d90e1f 58%, #ff5a52 100%)
+}
+
+.slide:nth-child(2) {
+    background: radial-gradient(800px 380px at 85% 10%, rgba(255, 255, 255, .14), transparent 60%),
+        linear-gradient(120deg, #0f1115 0%, #2c313a 100%)
+}
+
+.slide:nth-child(3) {
+    background: radial-gradient(800px 380px at 85% 10%, rgba(255, 255, 255, .16), transparent 60%),
+        linear-gradient(120deg, #ba0a1c 0%, #ff4050 100%)
+}
+
+.slide.hi::after {
+    background: linear-gradient(90deg, rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, .46) 56%, rgba(0, 0, 0, .1) 100%)
+}
+
+.slide h1 {
+    max-width: 640px;
+    text-wrap: balance
+}
+
+.slide p {
+    max-width: 520px;
+    color: rgba(255, 255, 255, .84);
+    font-size: 1.05rem
+}
+
+.slide .btn {
+    background: #fff;
+    color: var(--red);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, .18)
+}
+
+.slide .btn:hover {
+    background: #fff;
+    color: var(--red2)
+}
+
+.dots {
+    bottom: 18px;
+    gap: 7px
+}
+
+.dots button {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, .45);
+    transition: width .2s ease, background .2s ease
+}
+
+.dots button.on {
+    width: 26px;
+    border-radius: 999px;
+    background: #fff
+}
+
+/* ---------- jarak & judul section ---------- */
+.page {
+    padding: 40px 0 64px
+}
+
+section.b {
+    margin-top: 64px
+}
+
+section.b:not(.cta) h2,
+.page>.wrap>h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: .7em
+}
+
+section.b:not(.cta) h2::before,
+.page>.wrap>h2::before {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 1.05em;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--red), var(--red2))
+}
+
+/* ---------- kartu & grid ---------- */
+.grid {
+    gap: 22px
+}
+
+.card {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    box-shadow: var(--sh);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease
+}
+
+.card .in {
+    padding: 18px 18px 20px
+}
+
+.pc {
+    width: 100%
+}
+
+.pc:hover {
+    transform: translateY(-4px);
+    border-color: rgba(217, 14, 31, .28);
+    box-shadow: var(--shl)
+}
+
+.ph img {
+    transition: transform .5s ease
+}
+
+.pc:hover .ph img,
+.gi:hover img {
+    transform: scale(1.045)
+}
+
+.tag {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #ffeff1;
+    color: var(--red);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase
+}
+
+.price {
+    margin-top: 2px;
+    font: 800 1.32rem "Plus Jakarta Sans", sans-serif;
+    letter-spacing: -.03em
+}
+
+.pc .in small {
+    display: block;
+    margin-top: 4px;
+    color: var(--mut);
+    font-size: .78rem;
+    line-height: 1.45;
+    text-wrap: balance
+}
+
+.card h3 {
+    margin-bottom: .2em
+}
+
+/* ---------- statistik ---------- */
+.stats {
+    gap: 14px;
+    margin-top: 26px;
+    text-align: left
+}
+
+.stats div {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 18px 18px;
+    box-shadow: var(--sh);
+    font-size: .92rem
+}
+
+.stats b {
+    font: 800 2rem/1.15 "Plus Jakarta Sans", sans-serif;
+    letter-spacing: -.03em;
+    margin-bottom: 2px
+}
+
+/* ---------- kenapa beli lewat saya ---------- */
+.why .in {
+    border-top: 0
+}
+
+.why .card {
+    border-top: 3px solid var(--red)
+}
+
+.why p {
+    font-size: .95rem
+}
+
+.whyw {
+    gap: 26px
+}
+
+/* ---------- langkah ---------- */
+.step {
+    gap: 16px
+}
+
+.step div {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 20px;
+    box-shadow: var(--sh)
+}
+
+.step div::before {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #ffeff1;
+    color: var(--red);
+    font: 800 1.05rem "Plus Jakarta Sans", sans-serif;
+    margin-bottom: 10px
+}
+
+/* ---------- testimoni ---------- */
+.rv {
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+    border-radius: var(--r);
+    box-shadow: var(--sh)
+}
+
+.rv .ph {
+    border-radius: 12px
+}
+
+.rv p {
+    color: var(--mut)
+}
+
+.stars {
+    font-size: 1.05rem;
+    letter-spacing: 1px
+}
+
+/* ---------- galeri ---------- */
+.gi {
+    border-radius: var(--r)
+}
+
+.strip .gi {
+    border-radius: var(--r)
+}
+
+.gi span {
+    padding: 30px 16px 12px
+}
+
+.pager {
+    gap: 8px;
+    margin-top: 26px
+}
+
+.pager .pg {
+    min-width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04)
+}
+
+.pager .pg:hover {
+    border-color: rgba(217, 14, 31, .5);
+    background: #fff
+}
+
+.pager .pg.on {
+    box-shadow: 0 8px 18px rgba(217, 14, 31, .25)
+}
+
+/* ---------- FAQ ---------- */
+details {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--sh);
+    transition: border-color .2s ease
+}
+
+details[open] {
+    border-color: rgba(217, 14, 31, .3)
+}
+
+summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-weight: 700;
+    list-style: none
+}
+
+summary::-webkit-details-marker {
+    display: none
+}
+
+summary::after {
+    content: "+";
+    flex: none;
+    color: var(--red);
+    font: 400 1.5rem/1 "Plus Jakarta Sans", sans-serif;
+    transition: transform .2s ease
+}
+
+details[open] summary::after {
+    transform: rotate(45deg)
+}
+
+/* ---------- CTA ---------- */
+.cta {
+    border-radius: var(--rl);
+    padding: 56px 24px;
+    background: radial-gradient(700px 320px at 82% 0%, rgba(255, 255, 255, .18), transparent 60%),
+        linear-gradient(120deg, #9d0614 0%, #d90e1f 58%, #ff5a52 100%);
+    box-shadow: var(--shl)
+}
+
+.cta h2 {
+    font-size: clamp(1.7rem, 4vw, 2.4rem)
+}
+
+.cta p {
+    color: rgba(255, 255, 255, .86);
+    font-size: 1.05rem
+}
+
+/* ---------- area teks ---------- */
+.info {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 0;
+    border-radius: var(--r);
+    padding: 26px 28px;
+    box-shadow: var(--sh)
+}
+
+.info::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--red), var(--red2))
+}
+
+.info small {
+    display: block;
+    margin-top: 6px
+}
+
+/* ---------- form ---------- */
+label {
+    font-weight: 600;
+    font-size: .92rem;
+    margin: 16px 0 7px
+}
+
+input,
+select {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #fbfbfc;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease
+}
+
+input:focus,
+select:focus {
+    background: #fff;
+    border-color: rgba(217, 14, 31, .5)
+}
+
+input:focus-visible,
+select:focus-visible {
+    outline: none;
+    border-color: var(--red);
+    box-shadow: 0 0 0 4px rgba(217, 14, 31, .13)
+}
+
+.seg {
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--soft)
+}
+
+.seg label {
+    border: 0;
+    border-radius: 11px;
+    padding: 10px;
+    font-weight: 600
+}
+
+.seg label:has(input:checked) {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .08)
+}
+
+.seg input:checked+span {
+    color: var(--red);
+    font-weight: 700
+}
+
+.combo::after {
+    border-color: var(--mut)
+}
+
+.clist {
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(16, 24, 40, .14)
+}
+
+.clist li {
+    border-radius: 8px;
+    margin: 0 6px;
+    padding: 9px 12px
+}
+
+.clist li:hover,
+.clist li.act {
+    background: #ffeff1
+}
+
+.res {
+    background: linear-gradient(180deg, #fff5f6 0%, #fff 72%);
+    border: 1px solid #ffd9dd;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--sh)
+}
+
+.res h3 {
+    margin-top: 0
+}
+
+.res .big {
+    font-size: 3rem
+}
+
+.res .btn {
+    margin-top: 6px
+}
+
+/* ---------- tabel ---------- */
+td {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line)
+}
+
+tr:last-child td {
+    border-bottom: 0
+}
+
+/* ---------- link dalam konten ---------- */
+main a:not(.btn) {
+    color: var(--red);
+    font-weight: 600;
+    text-decoration: none
+}
+
+main a:not(.btn):hover {
+    text-decoration: underline
+}
+
+/* ---------- detail mobil ---------- */
+.imgw .ph {
+    border-radius: 18px;
+    box-shadow: var(--sh)
+}
+
+.imgw .nav {
+    background: rgba(20, 22, 26, .55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px)
+}
+
+.imgw .nav:hover {
+    background: rgba(20, 22, 26, .78)
+}
+
+.opt {
+    border-radius: 12px;
+    background: #fbfbfc;
+    padding: 14px 16px;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease
+}
+
+.opt:hover {
+    border-color: rgba(217, 14, 31, .4)
+}
+
+.opt.on {
+    background: #fff5f6;
+    border-color: rgba(217, 14, 31, .5);
+    box-shadow: 0 0 0 3px rgba(217, 14, 31, .08)
+}
+
+.tb {
+    border-radius: 14px;
+    padding: 5px
+}
+
+.tb .ph {
+    border-radius: 10px
+}
+
+.tb.on {
+    box-shadow: 0 0 0 3px rgba(217, 14, 31, .12)
+}
+
+.modal {
+    background: rgba(12, 12, 14, .82);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px)
+}
+
+.mbox {
+    border-radius: 18px
+}
+
+/* ---------- footer ---------- */
+footer {
+    margin-top: 64px;
+    padding: 56px 0 28px;
+    background: #141114;
+    border-top: 0;
+    color: #e9e5e6
+}
+
+footer h3 {
+    color: #fff
+}
+
+footer p {
+    color: #cfc9cb
+}
+
+footer small {
+    color: #9a9294
+}
+
+footer .map {
+    border-color: rgba(255, 255, 255, .12);
+    border-radius: var(--r)
+}
+
+footer .wrap.two {
+    gap: 32px
+}
+
+footer .wrap:last-child {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, .08)
+}
+
+.soc a {
+    padding: 9px 18px;
+    border-radius: 999px
+}
+
+/* ---------- tombol ke atas ---------- */
+#top {
+    box-shadow: 0 10px 24px rgba(16, 24, 40, .28)
+}
+
+/* ---------- responsif ---------- */
+@media (max-width: 760px) {
+    nav .wrap {
+        min-height: 58px;
+        flex-wrap: nowrap;
+        gap: 8px
+    }
+
+    nav ul {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        gap: 2px;
+        -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 26px), transparent 100%);
+        mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 26px), transparent 100%)
+    }
+
+    nav ul::-webkit-scrollbar {
+        display: none
+    }
+
+    nav a.l {
+        white-space: nowrap;
+        padding: 7px 10px;
+        font-size: .86rem
+    }
+
+    .logo {
+        font-size: 1.15rem;
+        white-space: nowrap
+    }
+
+    .logo .lgo {
+        width: 28px;
+        height: 28px
+    }
+
+    .page {
+        padding: 28px 0 48px
+    }
+
+    section.b {
+        margin-top: 46px
+    }
+
+    .slide {
+        min-height: 360px;
+        padding: 34px 26px
+    }
+
+    .slide p {
+        font-size: .98rem
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px
+    }
+
+    .stats div {
+        padding: 14px
+    }
+
+    .cta {
+        padding: 42px 18px
+    }
+
+    footer {
+        margin-top: 48px;
+        padding: 42px 0 24px
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto
+    }
+
+    .card,
+    .btn,
+    .ph img,
+    .dots button {
+        transition: none
+    }
+}
+
+/* ===================================================================
+   MODE LIVE OBS — index.html?live=1
+   Kanvas tetap 1080x1920 (vertikal). Kamera OBS di area atas
+   (transparan), panel kalkulator di 1000px bawah.
+   =================================================================== */
+
+.lphead {
+    display: none
+}
+
+.live,
+.live body {
+    margin: 0;
+    background: transparent !important;
+    overflow: hidden
+}
+
+.live nav,
+.live footer,
+.live #top,
+.live .page {
+    display: none !important
+}
+
+.live #cicilan {
+    display: block !important;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 1080px;
+    height: 1920px;
+    padding: 0;
+    transform-origin: 0 0
+}
+
+.live #cicilan > .wrap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1040px;
+    max-width: none;
+    margin: 0;
+    padding: 34px 48px 30px;
+    background: #fff;
+    border-bottom: 5px solid var(--red);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden
+}
+
+.live .lphead {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 24px;
+    color: var(--mut);
+    margin-bottom: 16px
+}
+
+.live .lphead b {
+    font: 700 34px "Barlow Condensed", sans-serif;
+    color: var(--red);
+    letter-spacing: .03em
+}
+
+.live #cicilan h2,
+.live #cicilan > .wrap > p {
+    display: none
+}
+
+.live .two {
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+}
+
+.live .two > .card {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible
+}
+
+.live .two > .card .in {
+    padding: 0
+}
+
+/* form: 3 baris ringkas */
+.live .in {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px 20px
+}
+
+.live .fld > label {
+    margin: 0 0 6px;
+    font-size: 23px;
+    font-weight: 600;
+    color: var(--mut)
+}
+
+.live .f-search {
+    grid-column: 1 / -1
+}
+
+.live .f-harga {
+    grid-column: 1 / 3;
+    grid-row: 2
+}
+
+.live .f-op {
+    grid-column: 1 / 3;
+    grid-row: 3
+}
+
+.live #kf {
+    display: contents
+}
+
+.live .f-dp {
+    grid-column: 3 / 5;
+    grid-row: 2
+}
+
+.live .f-bunga {
+    grid-column: 5 / -1;
+    grid-row: 2
+}
+
+.live .in input,
+.live .in select {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 28px
+}
+
+.live .f-search input {
+    font-size: 30px
+}
+
+.live .combo::after {
+    top: 22px;
+    right: 20px
+}
+
+.live .seg label {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 26px
+}
+
+.live .clist {
+    max-height: 420px
+}
+
+.live .clist li {
+    padding: 14px 18px;
+    font-size: 26px
+}
+
+.live .clist li small {
+    font-size: 22px
+}
+
+/* hasil: ringkasan + 5 kartu tenor */
+.live .res {
+    background: transparent;
+    border: 0;
+    padding: 0
+}
+
+.live .lsum {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px
+}
+
+.live .lsum > div {
+    background: #f7f8f9;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 16px
+}
+
+.live .lsum span {
+    display: block;
+    font-size: 21px;
+    color: var(--mut)
+}
+
+.live .lsum b {
+    font: 700 32px "Barlow Condensed", sans-serif;
+    color: var(--tx)
+}
+
+.live .lcars {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-top: 14px
+}
+
+.live .lcar {
+    grid-column: span 2;
+    background: #fff1f2;
+    border: 1px solid #f6c9ce;
+    border-left: 5px solid var(--red);
+    border-radius: 10px;
+    padding: 12px 16px
+}
+
+.live .lcar:nth-child(4),
+.live .lcar:nth-child(5) {
+    grid-column: span 3
+}
+
+.live .lcar span {
+    display: block;
+    font-size: 23px;
+    font-weight: 600;
+    color: var(--mut)
+}
+
+.live .lcar b {
+    display: block;
+    font: 700 46px "Barlow Condensed", sans-serif;
+    color: var(--red);
+    line-height: 1.05;
+    margin: 2px 0 4px
+}
+
+.live .lcar small {
+    font-size: 21px;
+    color: var(--mut);
+    white-space: nowrap
+}
+
+.live .lfoot {
+    margin-top: 12px;
+    font-size: 21px;
+    color: var(--mut);
+    text-align: center
+}
+
+.live .lfoot b {
+    color: var(--red)
+}
+
+.live .lcash {
+    text-align: center;
+    padding: 24px 0
+}
+
+.live .lcash span {
+    display: block;
+    font-size: 26px;
+    color: var(--mut)
+}
+
+.live .lcash b {
+    display: block;
+    font: 700 90px "Barlow Condensed", sans-serif;
+    color: var(--red);
+    margin: 6px 0
+}
+
+.live .lcash small {
+    font-size: 24px;
+    color: var(--mut)
 }

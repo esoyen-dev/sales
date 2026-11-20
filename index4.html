@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test Data Apps Script</title>
+
+    <style>
+        body {
+            font: 15px/1.6 Consolas, monospace;
+            margin: 24px;
+            max-width: 900px;
+        }
+
+        h1 { font-size: 1.2rem }
+
+        #out {
+            background: #f6f6f6;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+
+        .line {
+            margin: 2px 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .ok { color: #0a7d24; font-weight: bold }
+        .bad { color: #c8102e; font-weight: bold }
+        .dim { color: #666 }
+
+        .car-item,
+        .rv-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .rv-photo img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Test Data Apps Script — cek testimoni</h1>
+
+    <div id="out">
+        <div class="line">Memuat data dari Apps Script...</div>
+    </div>
+
+    <h2>Daftar Mobil</h2>
+    <div id="cars-container"></div>
+
+    <h2>Testimoni Konsumen</h2>
+    <div id="rv-container"></div>
+
+    <script>
+
+        var API = 'https://script.google.com/macros/s/AKfycbyoX2-YK3m7fSf_tzWsva-_DqwJj2hHs8dQ6r56Wcg5RIWQ8nPoVU6n2y7F4NJpKgE5/exec';
+
+        var cars = [];
+        var rv = [];
+
+        // =================================
+        // STATUS
+        // =================================
+
+        function setStatus(message, type = 'dim') {
+            document.getElementById('out').innerHTML =
+                `<div class="line ${type}">${message}</div>`;
+        }
+
+        // =================================
+        // TAMPILKAN MOBIL
+        // =================================
+
+        function initCars() {
+
+            const container = document.getElementById('cars-container');
+
+            container.innerHTML = '';
+
+            if (!cars.length) {
+                container.innerHTML = '<p>Data mobil tidak ditemukan.</p>';
+                return;
+            }
+
+            cars.forEach(car => {
+
+                container.innerHTML += `
+                    <div class="car-item">
+                        <h3>${car.n}</h3>
+                        <p>${car.t || ''}</p>
+                        <strong>
+                            Rp ${Number(car.p).toLocaleString('id-ID')}
+                        </strong>
+                    </div>
+                `;
+
+            });
+
+        }
+
+        // =================================
+        // TAMPILKAN TESTIMONI
+        // =================================
+
+        function initRv() {
+
+            const container = document.getElementById('rv-container');
+
+            container.innerHTML = '';
+
+            if (!rv.length) {
+                container.innerHTML = '<p>Data testimoni tidak ditemukan.</p>';
+                return;
+            }
+
+            rv.forEach(item => {
+
+                const [nama, mobil, ulasan, no] = item;
+
+                container.innerHTML += `
+                    <div class="rv-item">
+
+                        <div class="rv-photo">
+                            <img
+                                src="images/konsumen/${no}.jpg"
+                                alt="${nama}"
+                                onerror="this.style.display='none'"
+                            >
+                        </div>
+
+                        <div class="rv-content">
+                            <h4>${nama}</h4>
+                            <small>${mobil}</small>
+                            <p>${ulasan}</p>
+                        </div>
+
+                    </div>
+                `;
+
+            });
+
+        }
+
+        // =================================
+        // LOAD DATA GOOGLE APPS SCRIPT
+        // =================================
+
+        function loadData() {
+
+            return new Promise((resolve, reject) => {
+
+                const script = document.createElement('script');
+
+                window.onDataLoaded = function(data) {
+
+                    try {
+
+                        cars = data.cars || [];
+                        rv = data.rv || [];
+
+                        console.log('Data Cars:', cars);
+                        console.log('Data Testimoni:', rv);
+
+                        // PENTING: Jalankan fungsi tampilan
+                        initCars();
+                        initRv();
+
+                        setStatus(
+                            `Berhasil memuat ${cars.length} mobil dan ${rv.length} testimoni.`,
+                            'ok'
+                        );
+
+                        resolve(data);
+
+                    } catch (error) {
+
+                        setStatus('Gagal memproses data: ' + error.message, 'bad');
+
+                        reject(error);
+
+                    } finally {
+
+                        delete window.onDataLoaded;
+                        script.remove();
+
+                    }
+
+                };
+
+                script.src = API + '?callback=onDataLoaded';
+
+                script.onerror = function(error) {
+
+                    delete window.onDataLoaded;
+                    script.remove();
+
+                    setStatus('Gagal mengambil data dari Google Apps Script.', 'bad');
+
+                    reject(error);
+
+                };
+
+                document.body.appendChild(script);
+
+            });
+
+        }
+
+        // =================================
+        // JALANKAN SAAT HALAMAN SIAP
+        // =================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            loadData().catch(error => {
+                console.error('Error:', error);
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>
