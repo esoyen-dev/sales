@@ -465,28 +465,68 @@
         return "images/mobil/" + c.k + "-" + cl(c)[j][0].toLowerCase() + ".jpg"
     }
 
-    // ===== load data dari Google Apps Script (JSONP) =====
+    // ===== load data dari Google Apps Script (JSONP + fallback fetch) =====
     function loadCars() {
         return new Promise(function(resolve, reject) {
             var cbName = 'onCarsLoaded';
             var script = document.createElement('script');
+            var done = false;
+            var timer = setTimeout(function() {
+                if (done) return;
+                done = true;
+                cleanup();
+                reject(new Error("timeout"))
+            }, 12000);
 
             function cleanup() {
+                clearTimeout(timer);
                 delete window[cbName];
-                script.remove();
+                script.remove()
             }
 
             window[cbName] = function(data) {
+                if (done) return;
+                done = true;
                 cleanup();
-                resolve(data);
+                resolve(data)
             };
             script.onerror = function(err) {
+                if (done) return;
+                done = true;
                 cleanup();
-                reject(err);
+                reject(err)
             };
-            script.src = API + '?callback=' + cbName;
+            script.src = API + '?callback=' + cbName + '&_=' + Date.now();
             document.body.appendChild(script);
         });
+    }
+
+    // cadangan: Apps Script mengizinkan CORS, jadi JSON bisa diambil langsung
+    function loadCarsFetch() {
+        var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+        var timer = ctl ? setTimeout(function() {
+            ctl.abort()
+        }, 12000) : 0;
+        return fetch(API + '?_=' + Date.now(), {
+            cache: "no-store",
+            signal: ctl ? ctl.signal : undefined
+        }).then(function(r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json()
+        }).then(function(d) {
+            clearTimeout(timer);
+            return d
+        }, function(err) {
+            clearTimeout(timer);
+            throw err
+        })
+    }
+
+    function loadCarsSafe() {
+        return loadCars().catch(function(err) {
+            console.warn("JSONP gagal, mencoba fetch:", err);
+            return loadCarsFetch()
+        })
     }
 
     // Sheets sering mengirim array sebagai string & angka sebagai teks
@@ -1249,16 +1289,20 @@
 
     // ===== start =====
     route(); // tampilkan halaman dulu (data belum ada)
-    document.getElementById("pgrid").innerHTML = "<p>Memuat data mobil...</p>";
+    document.getElementById("pgrid").innerHTML = "<p>Memuat data mobil dari Google Sheets…</p>";
     var cachedCars = readCarsCache();
     if (cachedCars) handleCars(cachedCars); // tampil instan dari cache, lalu tetap refresh dari Sheets
-    loadCars().then(handleCars).catch(function(err) {
+    loadCarsSafe().then(handleCars).catch(function(err) {
         console.error("Gagal mengambil data mobil:", err);
         if (!carsReady) {
             carsError = true;
             if (!cel.hidden) renderCombo("");
-            document.getElementById("pgrid").innerHTML = "<p>Data mobil gagal dimuat. Silakan muat ulang halaman.</p>";
-            if (LIVE) document.getElementById("cr").innerHTML = "<div class='lfoot'>Data mobil gagal dimuat. Muat ulang browser source di OBS.</div>";
+            var retry = " <button type='button' class='btn o' style='margin-top:10px' onclick='location.reload()'>Coba lagi</button>";
+            if (LIVE) retry = " <div style='margin-top:14px'><button type='button' class='btn' onclick='location.reload()'>Coba lagi</button></div>";
+            document.getElementById("pgrid").innerHTML =
+                "<p>Gagal memuat data mobil. Periksa koneksi internet, lalu coba lagi." + retry + "</p>";
+            if (LIVE) document.getElementById("cr").innerHTML =
+                "<div class='lfoot'>Gagal memuat data mobil. Periksa koneksi internet di perangkat ini, lalu muat ulang." + retry + "</div>";
             renderRv();
         }
     });

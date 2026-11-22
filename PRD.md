@@ -61,6 +61,7 @@ Navigasi nav menandai item aktif; hash tak dikenal jatuh ke `#home`.
 
 ### 4.1 Mekanisme
 - Data diambil via **JSONP**: `<script src="{API}?callback=onCarsLoaded">`.
+- Jika JSONP gagal/timeout (12 dtk), otomatis fallback ke `fetch(API)` (endpoint mengizinkan CORS), lalu tampilkan tombol "Coba lagi" bila keduanya gagal.
 - Endpoint dikonfigurasi di konstanta `API` pada `index.html`.
 - Data terakhir disimpan di `localStorage` (`tad_cars_v1`, maks. 24 jam) agar kunjungan berikutnya tampil instan, lalu tetap di-refresh dari Apps Script di latar belakang.
 - Gagal memuat → tampilkan pesan "Data mobil gagal dimuat" di grid produk; **tidak boleh** membiarkan halaman kosong tanpa pesan. Jika cache tersedia, data cache tetap dipakai.

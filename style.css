@@ -1671,6 +1671,19 @@ select:focus-visible {
     font-weight: 700
 }
 
+/* kotak pencarian mobil bisa diklik (termasuk area panah) */
+.combo {
+    cursor: pointer
+}
+
+.combo input {
+    cursor: pointer
+}
+
+.combo input:focus {
+    cursor: text
+}
+
 .combo::after {
     border-color: var(--mut)
 }
@@ -2080,7 +2093,8 @@ footer .wrap:last-child {
 
 .live .clist li {
     padding: 14px 18px;
-    font-size: 26px
+    font-size: 26px;
+    cursor: pointer
 }
 
 .live .clist li small {
