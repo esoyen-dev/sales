@@ -1,1 +1,0 @@
-﻿setTimeout(function(){window.onCarsLoaded({cars:[{n:"Avanza",k:"avanza",t:"MPV",p:250000000,d:"x",f:["a"],s:[["Mesin","1.3L"]],cl:[["hitam"]],ty:[["1.3 E MT",244000000],["1.3 G CVT",265000000]]},{n:"Veloz",k:"veloz",t:"MPV",p:300000000,d:"x",f:["a"],s:[["Mesin","1.5L"]],cl:[["red"]],ty:[["1.5 G CVT",295000000]]}],rv:[]})},6000);

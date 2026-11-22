@@ -62,7 +62,8 @@ Navigasi nav menandai item aktif; hash tak dikenal jatuh ke `#home`.
 ### 4.1 Mekanisme
 - Data diambil via **JSONP**: `<script src="{API}?callback=onCarsLoaded">`.
 - Endpoint dikonfigurasi di konstanta `API` pada `index.html`.
-- Gagal memuat → tampilkan pesan "Data mobil gagal dimuat" di grid produk; **tidak boleh** membiarkan halaman kosong tanpa pesan.
+- Data terakhir disimpan di `localStorage` (`tad_cars_v1`, maks. 24 jam) agar kunjungan berikutnya tampil instan, lalu tetap di-refresh dari Apps Script di latar belakang.
+- Gagal memuat → tampilkan pesan "Data mobil gagal dimuat" di grid produk; **tidak boleh** membiarkan halaman kosong tanpa pesan. Jika cache tersedia, data cache tetap dipakai.
 
 ### 4.2 Skema satu baris = satu mobil (kolom spreadsheet)
 
@@ -94,6 +95,7 @@ Aturan normalisasi (`normalize()`): angka boleh dikirim sebagai teks; array bole
 
 - **Pilihan mobil = tipe**: combobox berisi setiap tipe dari `ty` (nama model + nama tipe + harga), bukan per model; bisa **diketik untuk mencari** nama mobil/tipe (filter langsung, navigasi ↑/↓ + Enter, Esc menutup).
 - Harga mobil terisi otomatis dari tipe terpilih, **tetap bisa diedit manual**.
+- **Bunga flat tetap 7,5% per tahun** dan inputnya `readonly` (tidak bisa diubah host saat live maupun pengunjung web).
 - DP diisi manual sebagai nominal Rupiah (pemisah ribuan otomatis); default 20% dari harga saat ganti tipe.
 - Tidak ada pilihan tenor. Hasil langsung menampilkan angsuran untuk tenor **12, 24, 36, 48, 60 bulan**.
 - **Skema Priority = ADDM (Angsuran Dibayar Di Muka)**: angsuran pertama dibayar bersama DP, sehingga `Total DP = DP + angsuran pertama`.
@@ -105,7 +107,7 @@ Total    = pokok + bunga
 Angsuran = Total / tenor_bulan   (per tenor 12/24/36/48/60)
 Total DP = DP + Angsuran         (ADDM, per tenor)
 ```
-Nilai estimasi cepat di kartu terlaris: `est(p) = p × 0.8 × (1 + 0.065×4) / 48` (DP 20%, 4 tahun, bunga 6,5%).
+Nilai estimasi cepat di kartu terlaris: `est(p) = p × 0.8 × (1 + 0.075×4) / 48` (DP 20%, 4 tahun, bunga 7,5%).
 Teks disclaimer wajib ada: "Hasil berupa perkiraan… hubungi sales untuk penawaran resmi."
 
 ### 4.5 Mode Live OBS (`index.html?live=1`)
@@ -178,7 +180,7 @@ Aturan:
 |---|-------|-----------------|
 | F1 | Katalog produk | Grid menampilkan semua baris Sheets; klik kartu → `#mobil/{i}`; index tak valid → kembali `#home` |
 | F2 | Detail mobil | Bisa dibuka langsung via URL `#mobil/2` tanpa lewat katalog; pilih warna → foto+nama+background berubah; **tombol prev/next di atas foto utama berputar (loop) ke warna sebelum/berikutnya dan tetap sinkron dengan thumbnail**; mobil dengan 1 warna menyembunyikan tombol; pilih tipe → harga & teks WA berubah |
-| F3 | Kalkulator | Combobox pencarian tipe mobil dari Sheets (model + tipe + harga; filter saat mengetik, ↑/↓ + Enter, Esc); kredit/tunai tetap ada (tunai menyembunyikan field kredit); harga auto-isi & editable; DP manual dengan pemisah ribuan; bunga flat; **tanpa pilihan tenor**; hasil menampilkan angsuran tenor 12/24/36/48/60 + Total DP ADDM (DP + angsuran pertama); perubahan input langsung menghitung; tombol WA membawa model/tipe, harga & DP |
+| F3 | Kalkulator | Combobox pencarian tipe mobil dari Sheets (model + tipe + harga; filter saat mengetik, ↑/↓ + Enter, Esc); kredit/tunai tetap ada (tunai menyembunyikan field kredit); harga auto-isi & editable; DP manual dengan pemisah ribuan; bunga flat tetap 7,5% (readonly); **tanpa pilihan tenor**; hasil menampilkan angsuran tenor 12/24/36/48/60 + Total DP ADDM (DP + angsuran pertama); perubahan input langsung menghitung; tombol WA membawa model/tipe, harga & DP |
 | F4 | "Hitung cicilan" dari detail mobil | Mengisi dropdown + harga sesuai tipe terpilih, lalu langsung menampilkan hasil |
 | F5 | Slider beranda | Auto 5 detik, klik dot memilih slide, timer reset saat manual |
 | F6 | Testimoni & strip galeri | Auto-scroll berjalan, berhenti saat hover/touch, menghormati `prefers-reduced-motion` |

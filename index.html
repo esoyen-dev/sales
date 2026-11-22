@@ -13,6 +13,8 @@
     <link rel="apple-touch-icon" href="images/icon150.png" />
     <title>Agung Toyota Dumai</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://script.google.com" crossorigin>
+    <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 
     <link href="style.css" rel="stylesheet">
     <meta name="description" content="Dealer Resmi Mobil Toyota New Agya Dumai Promo Harga Terbaik Toyota New Agya. Hubungi Sales Toyota Nasmoco Dumai : Rizki Ameriko Nasution di Nomer 0813-6562-6009 (WA). Pelayanan cepat, ramah di Toyota Nasmoco Dumai. Kami melayani wilayah Dumai dan sekitarnya, Daerah Istimewa Yogyakarta. Exterior Toyota New Agya Eksterior Toyota New Agya hadir dengan konsep dynamic serta aerodinamis, ditambah kekuatan"
@@ -322,7 +324,7 @@
                                                 autocomplete="off" placeholder="0">
                                 </div>
                                 <div class="fld f-bunga">
-                                    <label>Bunga flat per tahun (%)</label><input id="cb" type="number" min="0" step="0.1" value="7.5" readonly>
+                                    <label>Bunga flat per tahun (%)</label><input id="cb" type="number" min="0" step="0.1" value="7.5" readonly aria-readonly="true" title="Bunga tetap 7,5% per tahun">
                                 </div>
                             </div>
                         </div>
@@ -541,8 +543,36 @@
 
         imgs();
         buildCombo();
+        carsReady = true;
         fill();
+        // kalau daftar pencarian sudah terbuka sebelum data selesai dimuat, isi ulang
+        if (!cel.hidden) renderCombo("");
         route(); // penting: agar #mobil/3 bisa dibuka langsung setelah data siap
+    }
+
+    // ===== cache data mobil (tampil instan saat halaman dibuka lagi) =====
+    var CARS_CACHE = "tad_cars_v1",
+        lastCarsKey = "";
+
+    function handleCars(data) {
+        var key = "";
+        try { key = JSON.stringify(data) } catch (e) {}
+        if (key && key === lastCarsKey) return;
+        lastCarsKey = key;
+        try {
+            localStorage.setItem(CARS_CACHE, JSON.stringify({ t: Date.now(), d: data }))
+        } catch (e) {}
+        initCars(data)
+    }
+
+    function readCarsCache() {
+        try {
+            var o = JSON.parse(localStorage.getItem(CARS_CACHE) || "null");
+            if (!o || !o.d || !(Date.now() - o.t < 24 * 60 * 60 * 1000)) return null;
+            return o.d
+        } catch (e) {
+            return null
+        }
     }
 
     // ===== pages =====
@@ -572,7 +602,7 @@
 
     // ===== kartu mobil =====
     function est(p) {
-        return p * 0.8 * (1 + 0.065 * 4) / 48
+        return p * 0.8 * (1 + 0.075 * 4) / 48
     }
 
     function card(i, e) {
@@ -813,14 +843,21 @@
         cb = document.getElementById("cb"),
         cr = document.getElementById("cr");
 
-    var TENORS = [12, 24, 36, 48, 60];
+    var TENORS = [12, 24, 36, 48, 60],
+        RATE = 7.5; // bunga flat tetap (% per tahun)
+    cb.value = RATE;
+    cb.readOnly = true;
+    cb.setAttribute("aria-readonly", "true");
+    cb.title = "Bunga tetap 7,5% per tahun";
 
     // ===== pencarian mobil & tipe (combobox) =====
     var cs = document.getElementById("cs"),
         cbox = document.getElementById("cbox"),
         cel = document.getElementById("clist"),
         citems = [],
-        cact = -1;
+        cact = -1,
+        carsReady = false,
+        carsError = false;
 
     function buildCombo() {
         citems = [];
@@ -842,7 +879,12 @@
             if (q && it.s.indexOf(q) < 0) return;
             h += '<li role="option" data-k="' + k + '"' + (it.v === cm.value ? ' aria-selected="true"' : "") + ">" + it.h + "</li>"
         });
-        cel.innerHTML = h || '<li class="nores" aria-disabled="true">Tidak ada tipe yang cocok</li>';
+        if (!h) {
+            var msg = carsError ? "Data mobil gagal dimuat. Muat ulang halaman." :
+                (carsReady ? "Tidak ada tipe yang cocok" : "Memuat data mobil…");
+            h = '<li class="nores" aria-disabled="true">' + msg + "</li>"
+        }
+        cel.innerHTML = h;
         cel.hidden = false;
         cact = -1;
         cs.setAttribute("aria-expanded", "true")
@@ -881,6 +923,12 @@
     // buka lagi daftar saat input diklik walau sudah fokus (mis. setelah Esc)
     cs.addEventListener("click", function() {
         if (cel.hidden) renderCombo(cs.value === comboLabel() ? "" : cs.value)
+    });
+    // tap area panah / sudut kotak juga membuka daftar (penting di layar sentuh)
+    cbox.addEventListener("click", function(e) {
+        if (e.target === cs || (e.target.closest && e.target.closest("li[data-k]"))) return;
+        cs.focus();
+        if (cel.hidden) renderCombo("")
     });
     cs.addEventListener("blur", function() {
         setTimeout(function() {
@@ -995,7 +1043,7 @@
         var s = sel(),
             dp = Math.min(dpNum(), h),
             pk = Math.max(h - dp, 0),
-            rate = +cb.value || 0,
+            rate = RATE,
             nama = s.c ? s.c.n + (s.t ? " " + s.t[0] : "") : "";
         if (LIVE) {
             var cards = "";
@@ -1202,11 +1250,17 @@
     // ===== start =====
     route(); // tampilkan halaman dulu (data belum ada)
     document.getElementById("pgrid").innerHTML = "<p>Memuat data mobil...</p>";
-    loadCars().then(initCars).catch(function(err) {
+    var cachedCars = readCarsCache();
+    if (cachedCars) handleCars(cachedCars); // tampil instan dari cache, lalu tetap refresh dari Sheets
+    loadCars().then(handleCars).catch(function(err) {
         console.error("Gagal mengambil data mobil:", err);
-        document.getElementById("pgrid").innerHTML = "<p>Data mobil gagal dimuat. Silakan muat ulang halaman.</p>";
-        if (LIVE) document.getElementById("cr").innerHTML = "<div class='lfoot'>Data mobil gagal dimuat. Muat ulang browser source di OBS.</div>";
-        renderRv();
+        if (!carsReady) {
+            carsError = true;
+            if (!cel.hidden) renderCombo("");
+            document.getElementById("pgrid").innerHTML = "<p>Data mobil gagal dimuat. Silakan muat ulang halaman.</p>";
+            if (LIVE) document.getElementById("cr").innerHTML = "<div class='lfoot'>Data mobil gagal dimuat. Muat ulang browser source di OBS.</div>";
+            renderRv();
+        }
     });
     </script>
 </body>
