@@ -291,7 +291,14 @@
         <!-- CICILAN -->
         <div class="page" id="cicilan">
             <div class="wrap">
-                <div class="lphead"><b>Toyota Dumai</b> Simulasi Cicilan &mdash; Skema Priority</div>
+                <div class="lphead">
+                    <span class="lpbadge"><img src="images/icon150.png" alt="Toyota"></span>
+                    <span class="lpt"><b>Toyota Dumai</b><span>Simulasi Cicilan &mdash; Skema Priority</span></span>
+                    <span class="lpaddr">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                        <span>Jl. Kelakap 7 No.13, Ratu Sima,<br>Kec. Dumai Selatan, Kota Dumai, Riau 28826</span>
+                    </span>
+                </div>
                 <h2>Hitung Cicilan</h2>
                 <div class="two">
                     <div class="card cin">
@@ -319,7 +326,7 @@
                             </div>
                             <div id="kf">
                                 <div class="fld f-dp">
-                                    <label>Uang muka (DP) (Rp)</label><input id="cd"
+                                    <label><span>Uang muka (DP) (Rp)</span> <span id="cdpct">0,00%</span></label><input id="cd"
                                                 type="text" inputmode="numeric"
                                                 autocomplete="off" placeholder="0">
                                 </div>
@@ -1038,26 +1045,20 @@
         return parseInt(String(ch.value).replace(/\D/g, ""), 10) || 0
     }
 
+    function pct2(v) {
+        return (v || 0).toFixed(2).replace(".", ",")
+    }
+
     // pemisah ribuan otomatis untuk input nominal
     function fmtNum(el) {
         var d = String(el.value).replace(/\D/g, "");
         el.value = d ? (+d).toLocaleString("id-ID") : ""
     }
 
-    // ===== mode live OBS (index.html?live=1): kanvas tetap 1080x1920 =====
+    // ===== mode live OBS (index.html?live=1): frame portrait 9:16 via CSS =====
     var LIVE = document.documentElement.classList.contains("live");
 
-    function liveScale() {
-        if (!LIVE) return;
-        var p = document.getElementById("cicilan"),
-            s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
-        p.style.transform = "scale(" + s + ")";
-        p.style.left = Math.round((window.innerWidth - 1080 * s) / 2) + "px";
-        p.style.top = Math.round((window.innerHeight - 1920 * s) / 2) + "px"
-    }
     if (LIVE) {
-        window.addEventListener("resize", liveScale);
-        liveScale();
         cr.innerHTML = "<div class='lfoot'>Memuat data mobil…</div>"
     }
 
@@ -1072,7 +1073,10 @@
 
     function calc() {
         var h = priceNum(),
+            dp = Math.min(dpNum(), h),
+            pct = h ? dp / h * 100 : 0,
             op = document.querySelector("input[name=op]:checked").value;
+        document.getElementById("cdpct").textContent = pct2(pct) + "%";
         document.getElementById("kf").style.display = op === "kredit" ? "" : "none";
         if (op === "cash") {
             cr.innerHTML = LIVE ?
@@ -1081,7 +1085,6 @@
             return
         }
         var s = sel(),
-            dp = Math.min(dpNum(), h),
             pk = Math.max(h - dp, 0),
             rate = RATE,
             nama = s.c ? s.c.n + (s.t ? " " + s.t[0] : "") : "";
@@ -1094,7 +1097,7 @@
             });
             cr.innerHTML = "<div class='lsum'>" +
                 "<div><span>Harga</span><b>" + rp(h) + "</b></div>" +
-                "<div><span>DP" + (h ? " " + Math.round(dp / h * 100) + "%" : "") + "</span><b>" + rp(dp) + "</b></div>" +
+                "<div><span>DP" + (h ? " " + pct2(pct) + "%" : "") + "</span><b>" + rp(dp) + "</b></div>" +
                 "<div><span>Pokok</span><b>" + rp(pk) + "</b></div>" +
                 "<div><span>Bunga flat</span><b>" + rate + "% / th</b></div></div>" +
                 "<div class='lcars'>" + cards + "</div>" +
@@ -1110,7 +1113,7 @@
         cr.innerHTML = "<h3>Simulasi Angsuran</h3>" +
             "<p style='margin:0 0 6px'><span class='tag'>Skema Priority</span><small>ADDM — angsuran pertama dibayar di muka bersama DP</small></p>" +
             "<table><tr><td>Harga mobil</td><td>" + rp(h) + "</td></tr>" +
-            "<tr><td>Uang muka (DP)" + (h ? " (" + Math.round(dp / h * 100) + "%)" : "") + "</td><td>" + rp(dp) + "</td></tr>" +
+            "<tr><td>Uang muka (DP)" + (h ? " (" + pct2(pct) + "%)" : "") + "</td><td>" + rp(dp) + "</td></tr>" +
             "<tr><td>Pokok pinjaman</td><td>" + rp(pk) + "</td></tr>" +
             "<tr><td>Bunga flat per tahun</td><td>" + rate + "%</td></tr></table>" +
             "<h3 style='margin-top:16px'>Angsuran per tenor</h3><table>" +

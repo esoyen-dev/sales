@@ -97,7 +97,7 @@ Aturan normalisasi (`normalize()`): angka boleh dikirim sebagai teks; array bole
 - **Pilihan mobil = tipe**: combobox berisi setiap tipe dari `ty` (nama model + nama tipe + harga), bukan per model; bisa **diketik untuk mencari** nama mobil/tipe (filter langsung, navigasi ↑/↓ + Enter, Esc menutup).
 - Harga mobil terisi otomatis dari tipe terpilih, **tetap bisa diedit manual**.
 - **Bunga flat tetap 7,5% per tahun** dan inputnya `readonly` (tidak bisa diubah host saat live maupun pengunjung web).
-- DP diisi manual sebagai nominal Rupiah (pemisah ribuan otomatis); default 20% dari harga saat ganti tipe.
+- DP diisi manual sebagai nominal Rupiah (pemisah ribuan otomatis); default 20% dari harga saat ganti tipe. Label "Uang muka (DP) (Rp)" menampilkan **persentase DP real-time** (2 digit desimal, format koma, mis. `20,00%`); nilai ikut berubah setiap harga/DP diubah dan dipakai juga di chip ringkasan serta tabel hasil.
 - Tidak ada pilihan tenor. Hasil langsung menampilkan angsuran untuk tenor **12, 24, 36, 48, 60 bulan**.
 - **Skema Priority = ADDM (Angsuran Dibayar Di Muka)**: angsuran pertama dibayar bersama DP, sehingga `Total DP = DP + angsuran pertama`.
 
@@ -113,21 +113,24 @@ Teks disclaimer wajib ada: "Hasil berupa perkiraan… hubungi sales untuk penawa
 
 ### 4.5 Mode Live OBS (`index.html?live=1`)
 
-Khusus untuk live TikTok lewat OBS: tampilan dirancang pada **kanvas tetap 1080×1920 (vertikal)**, tanpa scroll.
+Khusus untuk live TikTok lewat OBS: **lebar tampilan maksimal 1080px** dan menyusut proporsional saat jendela browser diperkecil, tinggi mengikuti layar (`100vh`), tanpa scroll dan tanpa `transform` dari JS. Panel kalkulator **mengisi penuh tinggi layar**.
 
 - URL: `index.html?live=1` → `<html class="live">` ditambahkan oleh script kecil di `<head>`.
-- Kanvas `#cicilan` fixed 1080×1920, di-scale otomatis (`transform: scale`) agar pas di browser source 1080×1920 maupun saat dipreview di layar lain.
-- **Panel atas 1040px** (putih, garis bawah merah, judul "Toyota Dumai — Skema Priority") berisi:
-  - form ringkas 3 baris: pencarian mobil, harga/DP/bunga, toggle Kredit/Tunai;
-  - ringkasan 4 chip: harga, DP (+%), pokok, bunga flat;
-  - **5 kartu tenor** (12/24/36/48/60) dengan angka angsuran besar + Total DP ADDM, layout 3+2;
-  - footer 1 baris penjelasan ADDM + disclaimer singkat.
-- **Area bawah ±880px transparan** — dipakai layar kamera OBS.
+- Frame `#cicilan`: `width: min(1080px, 100vw); height: 100vh; margin: 0 auto`, jadi saat browser lebih lebar frame tetap 1080px di tengah; saat jendela lebih sempit frame ikut menyusut; saat source OBS 1080px penuh.
+- Ukuran konten mengikuti lebar **dan** tinggi layar (CSS murni, tanpa `transform`), sehingga komposisi tidak berubah saat jendela diperkecil:
+  - layar normal (< 1150px): `--px: min(1.05px, 100vw / 1028.57, 100vh / 1040)`, form 6 kolom, ringkasan 4 chip, kartu tenor 3+2;
+  - layar tinggi (≥ 1150px, mis. `1080×1920`): `--px: min(1.5px, 100vw / 889, 100vh / 1580)`, form & ringkasan 2 kolom, kartu tenor 1 per baris agar mengisi tinggi tanpa terpotong.
+- **Panel kalkulator memenuhi 100% tinggi layar** (putih, garis bawah merah, judul "Toyota Dumai — Skema Priority"), isi di tengah vertikal:
+  - form ringkas: pencarian mobil, harga/DP/bunga, toggle Kredit/Tunai;
+  - ringkasan chip: harga, DP (+%), pokok, bunga flat;
+  - **5 kartu tenor** (12/24/36/48/60) dengan angka angsuran besar + Total DP ADDM;
+  - footer penjelasan ADDM + disclaimer singkat.
+- Tidak ada lagi area transparan di bawah; seluruh tinggi layar dipakai panel.
 - Navbar, footer, halaman lain, tombol WA, dan disclaimer panjang disembunyikan.
 - Harga & DP memakai pemisah ribuan; input tetap bisa diketik host saat live.
 - Data tetap dari Apps Script; saat memuat/gagal muncul pesan singkat di panel.
 
-Setup OBS: Browser Source `1080×1920` ke URL di atas, kamera sebagai source di area bawah, centang *Refresh browser when scene becomes active*.
+Setup OBS: Browser Source lebar **1080px** (tinggi mengikuti kanvas) ke URL di atas, lalu kamera ditambahkan sebagai source terpisah/overlay sesuai kebutuhan.
 
 ---
 
@@ -190,7 +193,7 @@ Aturan:
 | F9 | Tombol "ke atas" | Muncul setelah scroll 300px, smooth scroll |
 | F10 | Testimoni & galeri | Testimoni (`rv`) dari sheet `testimoni` via Apps Script, dengan data default di `index.html` sebagai fallback (lihat §4.3); galeri statis di `index.html` — **urutan tampil: foto terbaru dulu (nomor terbesar → terkecil)**, tab Galeri memakai **paging windowed** (`GALERI_PER_PAGE`, default 12/halaman; pager menampilkan halaman pertama, terakhir, dan ±1 dari halaman aktif, sisanya dipotong `…`), strip beranda menampilkan `STRIP_COUNT` foto terbaru |
 | F11 | Preview foto galeri (lightbox) | Klik foto galeri (tab galeri maupun strip beranda) → tampil besar di overlay gelap; navigasi prev/next (tombol, keyboard ←/→, swipe) **mengikuti urutan tampil yang sama**, tutup via ✕/Esc/klik latar; caption tampil jika ada; foto tidak terdistorsi (`object-fit: cover` di kartu, `contain` di lightbox) |
-| F12 | Mode live OBS | `index.html?live=1` → kanvas vertikal 1080×1920 tanpa scroll: panel kalkulator di atas (form ringkas + ringkasan + 5 kartu tenor besar 3+2 + footer ADDM), area bawah transparan untuk kamera; halaman lain/navbar/footer/tombol WA disembunyikan; scaling otomatis mengikuti ukuran browser source (lihat §4.5) |
+| F12 | Mode live OBS | `index.html?live=1` → lebar maksimal 1080px (tengah browser) dan menyusut proporsional saat jendela diperkecil, tinggi penuh mengikuti layar tanpa scroll: panel kalkulator mengisi 100% tinggi (form ringkas + ringkasan + 5 kartu tenor besar 3+2 + footer ADDM); halaman lain/navbar/footer/tombol WA disembunyikan; label DP menampilkan persentase 2 desimal (lihat §4.4–4.5) |
 
 ---
 

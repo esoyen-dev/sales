@@ -1647,6 +1647,26 @@ select:focus-visible {
     appearance: textfield
 }
 
+/* persentase DP real-time di label */
+.f-dp > label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px
+}
+
+.f-dp > label > span:first-child {
+    white-space: nowrap
+}
+
+#cdpct {
+    flex: none;
+    color: var(--red);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap
+}
+
 .seg {
     gap: 4px;
     padding: 4px;
@@ -1935,8 +1955,10 @@ footer .wrap:last-child {
 
 /* ===================================================================
    MODE LIVE OBS — index.html?live=1
-   Kanvas tetap 1080x1920 (vertikal). Kamera OBS di area atas
-   (transparan), panel kalkulator di 1000px bawah.
+   Frame maksimal 1080px (sumber OBS), tapi menyusut mengikuti lebar
+   jendela browser. Panel mengisi penuh tinggi layar (100vh); semua
+   ukuran memakai --px yang diskalakan dari lebar DAN tinggi layar,
+   sehingga komposisi tetap sama walau jendela diperkecil.
    =================================================================== */
 
 .lphead {
@@ -1946,6 +1968,7 @@ footer .wrap:last-child {
 .live,
 .live body {
     margin: 0;
+    height: 100%;
     background: transparent !important;
     overflow: hidden
 }
@@ -1958,14 +1981,16 @@ footer .wrap:last-child {
 }
 
 .live #cicilan {
+    /* pembagi 1028.57 = lebar desain 1080px pada skala maksimal 1.05px */
+    --px: min(1.05px, calc(100vw / 1028.57), calc(100vh / 1040));
     display: block !important;
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 1080px;
-    height: 1920px;
+    position: relative;
+    width: min(1080px, 100vw);
+    height: 100vh;
+    margin: 0 auto;
     padding: 0;
-    transform-origin: 0 0
+    font-size: calc(16 * var(--px));
+    line-height: 1.35
 }
 
 .live #cicilan > .wrap {
@@ -1973,32 +1998,122 @@ footer .wrap:last-child {
     left: 0;
     right: 0;
     top: 0;
-    height: 1040px;
+    height: 100%;
     max-width: none;
     margin: 0;
-    padding: 34px 48px 30px;
-    background: #fff;
-    border-bottom: 5px solid var(--red);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, .3);
+    padding: 0 calc(48 * var(--px)) calc(30 * var(--px));
+    background:
+        radial-gradient(rgba(217, 14, 31, .055) 1px, transparent 1.4px) 0 0 / calc(26 * var(--px)) calc(26 * var(--px)),
+        radial-gradient(120% 85% at 100% 0%, rgba(217, 14, 31, .10), transparent 55%),
+        radial-gradient(80% 60% at 0% 100%, rgba(217, 14, 31, .06), transparent 60%),
+        linear-gradient(180deg, #fff 0%, #fff 55%, #fff8f8 100%);
+    border-bottom: calc(5 * var(--px)) solid var(--red);
+    box-shadow: 0 calc(18 * var(--px)) calc(50 * var(--px)) rgba(0, 0, 0, .3);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: hidden
 }
 
 .live .lphead {
+    position: relative;
     display: flex;
-    align-items: baseline;
-    gap: 14px;
-    font-size: 24px;
-    color: var(--mut);
-    margin-bottom: 16px
+    align-items: center;
+    flex-wrap: wrap;
+    gap: calc(8 * var(--px)) calc(16 * var(--px));
+    margin: 0 calc(-48 * var(--px)) calc(18 * var(--px));
+    padding: calc(16 * var(--px)) calc(48 * var(--px));
+    background:
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, .055) 0 calc(9 * var(--px)), transparent calc(9 * var(--px)) calc(20 * var(--px))),
+        radial-gradient(130% 180% at 88% -30%, rgba(255, 255, 255, .28), transparent 58%),
+        linear-gradient(115deg, #8c0411 0%, #d90e1f 55%, #a30716 100%);
+    color: #fff;
+    border-bottom: calc(3 * var(--px)) solid rgba(0, 0, 0, .16);
+    box-shadow:
+        0 calc(8 * var(--px)) calc(24 * var(--px)) rgba(140, 4, 17, .25),
+        inset 0 calc(1 * var(--px)) 0 rgba(255, 255, 255, .22)
 }
 
-.live .lphead b {
-    font: 700 34px "Barlow Condensed", sans-serif;
-    color: var(--red);
-    letter-spacing: .03em
+.live .lphead::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(3 * var(--px));
+    background: linear-gradient(90deg, transparent, #ffd9dc 50%, transparent);
+    opacity: .65;
+    pointer-events: none
+}
+
+.live .lpbadge {
+    flex: none;
+    width: calc(52 * var(--px));
+    height: calc(52 * var(--px));
+    border-radius: 50%;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 calc(4 * var(--px)) calc(12 * var(--px)) rgba(0, 0, 0, .22)
+}
+
+.live .lpbadge img {
+    display: block;
+    width: calc(36 * var(--px));
+    height: auto
+}
+
+.live .lpt {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--px));
+    min-width: 0
+}
+
+.live .lpt b {
+    font: 700 calc(32 * var(--px)) "Barlow Condensed", sans-serif;
+    color: #fff;
+    letter-spacing: .03em;
+    line-height: 1
+}
+
+.live .lpt b,
+.live .lpt span {
+    white-space: nowrap
+}
+
+.live .lpt span {
+    font-size: calc(17 * var(--px));
+    font-weight: 600;
+    color: rgba(255, 255, 255, .88);
+    letter-spacing: .04em;
+    text-transform: uppercase
+}
+
+.live .lpaddr {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: calc(7 * var(--px));
+    padding: calc(7 * var(--px)) calc(12 * var(--px));
+    background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .10));
+    border: calc(1 * var(--px)) solid rgba(255, 255, 255, .34);
+    border-radius: calc(10 * var(--px));
+    font-size: calc(22 * var(--px));
+    line-height: 1.35;
+    color: rgba(255, 255, 255, .97);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18)
+}
+
+.live .lpaddr svg {
+    flex: none;
+    width: calc(50 * var(--px));
+    height: calc(50 * var(--px));
+    fill: #fff
+}
+
+.live .lpaddr span {
+    white-space: nowrap
 }
 
 .live #cicilan h2,
@@ -2009,7 +2124,10 @@ footer .wrap:last-child {
 .live .two {
     display: flex;
     flex-direction: column;
-    gap: 20px
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 0;
+    gap: calc(20 * var(--px))
 }
 
 .live .two > .card {
@@ -2027,14 +2145,19 @@ footer .wrap:last-child {
 .live .in {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 12px 20px
+    gap: calc(12 * var(--px)) calc(20 * var(--px))
 }
 
 .live .fld > label {
-    margin: 0 0 6px;
-    font-size: 23px;
+    margin: 0 0 calc(6 * var(--px));
+    font-size: calc(23 * var(--px));
     font-weight: 600;
     color: var(--mut)
+}
+
+/* label DP lebih rapat agar teks + persen muat satu baris */
+.live .f-dp > label {
+    font-size: calc(21 * var(--px))
 }
 
 .live .f-search {
@@ -2067,38 +2190,38 @@ footer .wrap:last-child {
 
 .live .in input,
 .live .in select {
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 28px
+    padding: calc(12 * var(--px)) calc(16 * var(--px));
+    border-radius: calc(8 * var(--px));
+    font-size: calc(28 * var(--px))
 }
 
 .live .f-search input {
-    font-size: 30px
+    font-size: calc(30 * var(--px))
 }
 
 .live .combo::after {
-    top: 22px;
-    right: 20px
+    top: calc(22 * var(--px));
+    right: calc(20 * var(--px))
 }
 
 .live .seg label {
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 26px
+    padding: calc(12 * var(--px));
+    border-radius: calc(8 * var(--px));
+    font-size: calc(26 * var(--px))
 }
 
 .live .clist {
-    max-height: 420px
+    max-height: calc(420 * var(--px))
 }
 
 .live .clist li {
-    padding: 14px 18px;
-    font-size: 26px;
+    padding: calc(14 * var(--px)) calc(18 * var(--px));
+    font-size: calc(26 * var(--px));
     cursor: pointer
 }
 
 .live .clist li small {
-    font-size: 22px
+    font-size: calc(22 * var(--px))
 }
 
 /* hasil: ringkasan + 5 kartu tenor */
@@ -2111,41 +2234,43 @@ footer .wrap:last-child {
 .live .lsum {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 14px
+    gap: calc(14 * var(--px))
 }
 
 .live .lsum > div {
-    background: #f7f8f9;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 16px
+    background: linear-gradient(180deg, #fbfcfd, #f5f6f8);
+    border: calc(1 * var(--px)) solid var(--line);
+    border-radius: calc(10 * var(--px));
+    padding: calc(10 * var(--px)) calc(16 * var(--px));
+    box-shadow: 0 calc(2 * var(--px)) calc(6 * var(--px)) rgba(16, 24, 40, .04)
 }
 
 .live .lsum span {
     display: block;
-    font-size: 21px;
+    font-size: calc(21 * var(--px));
     color: var(--mut)
 }
 
 .live .lsum b {
-    font: 700 32px "Barlow Condensed", sans-serif;
+    font: 700 calc(32 * var(--px)) "Barlow Condensed", sans-serif;
     color: var(--tx)
 }
 
 .live .lcars {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 14px;
-    margin-top: 14px
+    gap: calc(14 * var(--px));
+    margin-top: calc(14 * var(--px))
 }
 
 .live .lcar {
     grid-column: span 2;
-    background: #fff1f2;
-    border: 1px solid #f6c9ce;
-    border-left: 5px solid var(--red);
-    border-radius: 10px;
-    padding: 12px 16px
+    background: linear-gradient(160deg, #fff5f6 0%, #ffe9ec 100%);
+    border: calc(1 * var(--px)) solid #f6c9ce;
+    border-left: calc(5 * var(--px)) solid var(--red);
+    border-radius: calc(10 * var(--px));
+    padding: calc(12 * var(--px)) calc(16 * var(--px));
+    box-shadow: 0 calc(3 * var(--px)) calc(10 * var(--px)) rgba(217, 14, 31, .07)
 }
 
 .live .lcar:nth-child(4),
@@ -2155,28 +2280,28 @@ footer .wrap:last-child {
 
 .live .lcar span {
     display: block;
-    font-size: 23px;
+    font-size: calc(23 * var(--px));
     font-weight: 600;
     color: var(--mut)
 }
 
 .live .lcar b {
     display: block;
-    font: 700 46px "Barlow Condensed", sans-serif;
+    font: 700 calc(46 * var(--px)) "Barlow Condensed", sans-serif;
     color: var(--red);
     line-height: 1.05;
-    margin: 2px 0 4px
+    margin: calc(2 * var(--px)) 0 calc(4 * var(--px))
 }
 
 .live .lcar small {
-    font-size: 21px;
+    font-size: calc(21 * var(--px));
     color: var(--mut);
     white-space: nowrap
 }
 
 .live .lfoot {
-    margin-top: 12px;
-    font-size: 21px;
+    margin-top: calc(12 * var(--px));
+    font-size: calc(21 * var(--px));
     color: var(--mut);
     text-align: center
 }
@@ -2187,23 +2312,76 @@ footer .wrap:last-child {
 
 .live .lcash {
     text-align: center;
-    padding: 24px 0
+    padding: calc(24 * var(--px)) 0
 }
 
 .live .lcash span {
     display: block;
-    font-size: 26px;
+    font-size: calc(26 * var(--px));
     color: var(--mut)
 }
 
 .live .lcash b {
     display: block;
-    font: 700 90px "Barlow Condensed", sans-serif;
+    font: 700 calc(90 * var(--px)) "Barlow Condensed", sans-serif;
     color: var(--red);
-    margin: 6px 0
+    margin: calc(6 * var(--px)) 0
 }
 
 .live .lcash small {
-    font-size: 24px;
+    font-size: calc(24 * var(--px));
     color: var(--mut)
+}
+
+/* Layar tinggi (mis. OBS 1080x1920): konten diperbesar dan ditata
+   ulang 2 kolom (form + ringkasan) dan kartu tenor 1 per baris agar
+   benar-benar mengisi tinggi tanpa teks terpotong. */
+@media (min-height: 1150px) {
+    .live #cicilan {
+        /* pembagi 889 = lebar desain 1080px pada skala 1.215px */
+        --px: min(1.5px, calc(100vw / 889), calc(100vh / 1580))
+    }
+
+    .live .in {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .live .f-search {
+        grid-column: 1 / -1;
+        grid-row: 1
+    }
+
+    .live .f-harga {
+        grid-column: 1;
+        grid-row: 2
+    }
+
+    .live .f-dp {
+        grid-column: 2;
+        grid-row: 2
+    }
+
+    .live .f-op {
+        grid-column: 1;
+        grid-row: 3
+    }
+
+    .live .f-bunga {
+        grid-column: 2;
+        grid-row: 3
+    }
+
+    .live .lsum {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .live .lcars {
+        grid-template-columns: 1fr
+    }
+
+    .live .lcar,
+    .live .lcar:nth-child(4),
+    .live .lcar:nth-child(5) {
+        grid-column: 1 / -1
+    }
 }
