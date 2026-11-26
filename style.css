@@ -2385,3 +2385,42 @@ footer .wrap:last-child {
         grid-column: 1 / -1
     }
 }
+
+/* Layar sempit (HP / jendela browser kecil): logo + judul di baris atas,
+   alamat di baris bawah dan rata kiri. Form mulai langsung di bawah header
+   (tidak di tengah vertikal) supaya tidak ada jarak kosong besar. */
+@media (max-width: 720px) {
+    .live .lphead {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+            "badge title"
+            "addr addr";
+        align-items: center;
+        gap: calc(8 * var(--px)) calc(12 * var(--px))
+    }
+
+    .live .lpbadge {
+        grid-area: badge
+    }
+
+    .live .lpt {
+        grid-area: title
+    }
+
+    .live .lpaddr {
+        grid-area: addr;
+        margin-left: 0;
+        justify-self: start;
+        max-width: 100%
+    }
+
+    .live .lpaddr span {
+        white-space: normal
+    }
+
+    .live .two {
+        justify-content: flex-start;
+        gap: calc(14 * var(--px))
+    }
+}
